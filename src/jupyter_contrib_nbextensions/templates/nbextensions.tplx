@@ -4,11 +4,30 @@
 
 % This template won't produce a valid LaTeX file alone, use it to extend your own template.
 
+
+((* block definitions *))
+((( super() )))
+
+% new environment for split cells.
+\newenvironment{doublecol}{
+    \begin{minipage}[t]{.47\textwidth}
+        \vspace{12pt}
+}{
+        \vspace{12pt}
+    \end{minipage}
+    \hspace{.02\textwidth}
+}
+((* endblock definitions *))
+
+
 %===============================================================================
-% Collapsible Headings
+% Collapsible Headings and split cells
 %===============================================================================
-((* block any_cell scoped *))
-((*- if cell.metadata.hidden -*))
+((* block any_cell scoped *)) ((* set split = cell.metadata.cell_style == 'split' *)) ((* if split  *))
+\begin{doublecol}
+((( super() )))
+\end{doublecol}
+((*- elif cell.metadata.hidden -*))
 ((*- else -*))
     ((( super() )))
 ((*- endif -*))
@@ -39,6 +58,7 @@
     ((( super() )))
 ((*- endif -*))
 ((* endblock execute_result *))
+
 
 %==============================================================================
 % Support Macros
