@@ -1,0 +1,86 @@
+((= Base template for documents =))
+
+((*- extends 'nbextensions.tplx' -*))
+
+
+%===============================================================================
+% Packages
+%===============================================================================
+
+((* block packages *))
+((( super() )))
+\usepackage{capt-of}
+\usepackage{float}
+\usepackage{listings}
+((* endblock *))
+
+((* block definitions *))
+((( super() )))
+\captionsetup[figure]{labelformat=default}
+\captionsetup[lstlisting]{labelformat=default}
+\captionsetup[table]{labelformat=default}
+((* endblock definitions *))
+
+
+%===============================================================================
+% Title
+%===============================================================================
+
+
+%===============================================================================
+% Abstract
+%===============================================================================
+
+((* block abstract *))
+\begin{abstract}
+((* for cell in nb.cells if 'abstract' in cell.metadata.get('tags',[]) *))
+   ((( cell.source | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash', 'json',extra_args=[]) | resolve_references | convert_pandoc('json','latex'))))
+((* endfor *))
+\end{abstract}
+((* endblock abstract *))
+
+
+%===============================================================================
+% Figures, tables and listings
+%===============================================================================
+
+((* block any_cell scoped *))
+((* set tags = cell.metadata.get('tags', []) *))
+((* if 'figure' in tags *))
+((* if 'floating' in tags *))
+\begin{figure}[ht]
+    ((( super() )))
+    ((( caption_and_label(cell, 'figure') )))
+\end{figure}
+((* else *))
+((( super() )))
+((( caption_and_label(cell, 'figure') )))
+\vspace{12pt}
+((* endif *))
+((* elif 'table' in tags *))
+\begin{center}
+((( caption_and_label(cell, 'table') )))
+    \vspace{12pt}
+    ((( super() )))
+\end{center}
+((* elif 'listing' in tags *))
+\begin{center}
+    ((( caption_and_label(cell, 'lstlisting') )))
+    \vspace{12pt}
+    ((( super() )))
+\end{center}((* else *))((( super() )))((* endif *))
+((* endblock any_cell *))
+
+
+%===============================================================================
+% Macros
+%===============================================================================
+
+% Macro for caption and label
+((* macro caption_and_label(cell, type='figure') -*))
+((* set caption = cell.metadata.get('caption', '') *))
+((* set label = cell.metadata.get('label', '') *))
+((* if caption *))\captionof{((( type )))}{((( caption )))}((* endif *))
+((* if label *))\label{((( label )))}((* endif *))
+((*- endmacro *))
+
